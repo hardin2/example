@@ -1,0 +1,151 @@
+// Redirection
+
+명령어1 > 파일1    : 기존파일 지우고 새로운 파일로 출력 
+
+명령어1 >> 파일1   : 파일 끝에 출력 
+
+명령어1 < 파일1    : 파일1의 data를 입력
+
+명령어1 < 들어오는파일 > 나가는파일   : 들어오는파일에서 내용을 불러들인 뒤 나가는파일에 기록한다.
+
+​
+
+cmd창 : java -cp bin 패키지.메인클래스명 < 입력파일명
+
+       java -cp bin card.client.launcher < ..\TestData\Question1\TEST1.TXT
+
+​
+
+// JAVA API 모음
+
+// 현재 날짜, 시각 문자열로 가져오기
+
+LocalDateTime now = LocalDateTime.now();
+
+String strDT = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+
+// 문자열 날짜, 시각 -> Data 타입으로 변경
+
+String strTime = "2022-03-31 21:40:15";
+
+SimpleDateFormat transFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+Date dt = transFormat.parse(strTime);
+
+//Date타입 -> LocalDateTime 타입으로 변경
+
+LocalDateTime dt = dt.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+// 시간 차이 계산 
+
+String start = "20220331142310"; String edn = "20220331142420"
+
+SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
+
+Date dd1 = sf.parse(start); Date dd2 = sf.parse(end);
+
+long diff = dd2.getTime() - dd1.getTime();
+
+System.out.println(diff / 1000); // sec difference
+
+// 위치로 자르기
+
+String strTest = "fkdjfijfid";
+
+strTest.substring(10); // 10자리부터 끝까지
+
+strTest.substring(10,18); // 10자리에서 18자리까지
+
+String [] words = strTest.split("#");
+
+for (String item : words) System.out.println(item);
+
+// String -> Byte Array
+
+String strTest = "ABCD123";
+
+byte [] byteTest = new byte[80];
+
+byteTest = strTest.getBytes("UTF-8");
+
+for (byte b : byteTest) System.out.print(b + " ");
+
+// Byte Array -> String
+
+String strTest2 = new String(byteTest)
+
+​
+
+​
+
+//////////////////////////////////////////////////////////////
+
+Queue<String> myQ = new LinkedList<>();
+
+myQ.add("one");
+
+myQ.add("two");
+
+myQ.add("three");
+
+System.out.println("Queue Count = " + myQ.size());
+
+for (String number : myQ) {
+
+ System.out.println(number);
+
+}
+
+System.out.println("Deque: " + myQ.poll());
+
+System.out.println("Peek : " + myQ.peek());
+
+System.out.println("Contains(\"three\") = " + myQ.contaions("three"));
+
+myQ.clear();
+
+System.out.println("Queue Count = " + myQ.size());
+
+​
+
+//////////////////////////////////////////////////////////////
+
+Queue<String> myQ = new ArrayList<>();
+
+myQ.add("one");
+
+myQ.add("two");
+
+myQ.add("three");
+
+System.out.println("Queue Count = " + myQ.size());
+
+for (String number : myQ) {
+
+ System.out.println(number);
+
+}
+
+System.out.println("Deque: " + myQ.get(0));
+
+myQ.remove(0);
+
+System.out.println("Peek : " + myQ.get(0));
+
+System.out.println("Contains(\"three\") = " + myQ.contaions("three"));
+
+myQ.clear();
+
+System.out.println("Queue Count = " + myQ.size());
+
+​
+
+////////////////////////////////
+
+// HTTP
+
+// http://www.aa.com:8888/my/res/path?qa=x&qy=y
+
+//         <-----host------><port><---path----><-query->
+
+// HTTP요청메소드 : GET(요청), POST(자원생성), PUT(자원변경), DELETE(자원삭제), HEAD(헤더정보만 요청), TRACE

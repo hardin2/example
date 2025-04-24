@@ -1,0 +1,259 @@
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+​
+public void testJSON()
+{
+	String json = "{\"name\":\"kim\",\"age\""20,\"gender\""\"M\"};
+	JsonElement jsonElement = JsonParser.parseString(json);
+	System.out.println(jsonElement.toString());
+	String name = jsonElement.getAsJsonObject().get("name").getAsString();
+	System.out.println("name = "+name);
+	int age = jsonElement.getAsJsonObject().get("age").getAsInt();
+	System.out.println("age = "+age);
+	String gender = jsonElement.getAsJsonObject().get("gender").getAsString();
+	System.out.println("gender = "+gender);
+}
+
+public void parsingJSON1()
+{
+	/* 자바에서 JSON Parsing하기 */
+	
+	/*
+	1. Object 데이터가 있는 JSON 파싱하기
+	Object 데이터는 "{", "}"(curly brace)로 감싸져 있는 데이터를 나타낸다. 
+
+	import org.json.simple.JSONObject;
+	import org.json.simple.parser.JSONParser;
+	import org.json.simple.parser.ParseException;
+
+	public class ApiTest2 {
+		public static void main(String[] args) throws ParseException {
+		// JSONParser로 JSONObject 객체
+		JSONObject objData = (JSONObject)new JSONParser().parse(jsonData);
+
+		// 첫 번째 JSONObject
+		JSONObject movieData1 = (JSONObject)objData.get("movie1");
+
+		// 두 번째 JSONObject
+		JSONObject movieData2 = (JSONObject)objData.get("movie2");
+
+		// 데이터 출력하기
+		StringBuilder sb = new StringBuilder();
+		sb.append("movie1----\n");
+		sb.append("title: " + movieData1.get("title")+"\n");
+		sb.append("url: " + movieData1.get("url")+"\n");
+		sb.append("movie2----\n");
+		sb.append("title: " + movieData2.get("title")+"\n");
+		sb.append("url: " + movieData2.get("url")+"\n");
+		System.out.println(sb.toString());
+	}
+
+	// jsonData
+	static String jsonData=
+				"{"
+
+					+       "\"movie1\": {"
+
+					+           "\"title\": \"Blame\","
+
+					+           "\"url\": \"https://yts.mx/movies/blame-2021\","
+
+					+       "},"
+
+					+       "\"movie2\": {"
+
+					+           "\"title\": \"Tethered\","
+
+					+           "\"url\": \"https://yts.mx/movies/tethered-2021\","
+
+					+       "},"
+
+					+ "}";
+
+	}
+	*/
+	​
+	/*
+	2. Array 데이터가 있는 JSON 파싱하기
+	JSON 데이터안에 있는 "[", "]"로 감싸진 배열 데이터를 파싱하기 위해서는 JSONArray가 추가적으로 필요하다.
+
+	import org.json.simple.JSONArray;
+	import org.json.simple.JSONObject;
+	import org.json.simple.parser.JSONParser;
+	import org.json.simple.parser.ParseException;
+
+	public class ApiTest2 {
+		public static void main(String[] args) throws ParseException {
+			// JSONParser에 JSON데이터를 넣어 파싱한 다음 JSONObject로 반환한다.
+			JSONObject objData = (JSONObject)new JSONParser().parse(jsonData);
+			// JSONObject에서 Array데이터를 get하여 JSONArray에 저장한다.
+			JSONArray arrData = (JSONArray)objData.get("movies");
+
+			// 배열 데이터 출력하기
+			JSONObject tmp;
+			JSONArray tmpArr;
+			StringBuilder sb= new StringBuilder();
+			for(int i=0; i<arrData.size(); i++){
+				tmp = (JSONObject)arrData.get(i);
+				sb.append("title("+i+"): " + tmp.get("title")+"\n");
+				sb.append("url("+i+"): " + tmp.get("url")+"\n");
+				// Array데이터 안에 Array 데이터 꺼내기 
+				tmpArr = (JSONArray)tmp.get("genres");
+				sb.append("genres("+i+"): ");
+				for(int j=0; j<tmpArr.size(); j++){
+					sb.append(j+"." + tmpArr.get(j));
+					if(j!=tmpArr.size()-1) sb.append(", ");
+				}
+				sb.append("\n");
+			}
+			System.out.println(sb.toString());
+		}
+
+		// jsonData
+		static String jsonData=
+				   "{"
+
+						   +   "\"movies\": ["
+
+						   +       "{"
+
+						   +           "\"title\": \"Blame\","
+
+						   +           "\"url\": \"https://yts.mx/movies/blame-2021\","
+
+						   +           "\"genres\": ["
+
+						   +                        "\"Crime\",\"Thriller\""
+
+						   +            "]"
+
+						   +       "},"
+
+						   +       "{"
+
+						   +           "\"title\": \"Tethered\","
+
+						   +           "\"url\": \"https://yts.mx/movies/tethered-2021\","
+
+						   +           "\"genres\": ["
+
+						   +                        "\"Drama\",\"Mystery\",\"Sci-Fi\""
+
+						   +            "]"
+
+						   +       "},"
+
+						   +       "{"
+
+						   +           "\"title\": \"The Resonator: Miskatonic U\","
+
+						   +           "\"url\": \"https://yts.mx/movies/the-resonator-miskatonic-u-2021\","
+
+						   +           "\"genres\": ["
+
+						   +                        "\"Fantasy\""
+
+						   +            "]"
+
+						   +       "}"
+
+						   +   "]"
+
+						   +"}";
+
+	}
+	*/
+	​
+	/*
+	3. 자바에서 API 호출하여 JSON 데이터 파싱하기
+	위에서 다룬 URL, URLConnection, HttpURLConnection 클래스들의 메서드와 JSON 파싱 예제를 활용하여 REST API로 받아오는 JSON 데이터를 파싱할 수 있다.
+	OPEN API에서 제공하는 JSON 데이터 URL 예시
+	https://yts.mx/api/v2/list_movies.json  
+	https://httpbin.org/get
+
+	import java.io.BufferedReader;
+	import java.io.InputStreamReader;
+	import java.net.HttpURLConnection;
+	import java.net.URL;
+	import org.json.simple.JSONArray;
+	import org.json.simple.JSONObject;
+	import org.json.simple.parser.JSONParser;
+	import org.json.simple.parser.ParseException;
+
+	public class ApiTest {
+		static final String BASE_URL = "https://yts.mx/api/v2/list_movies.json";
+		static final String AUTH_TOKEN = "AUTH_TOKEN 값";
+		static String AUTH_KEY = "Bearer " + "AUTH_KEY 값";
+		public static void main(String[] args) throws ParseException {
+
+		// REST API 호출하기
+		URL url = null;
+		HttpURLConnection con= null;
+		JSONObject result = null;
+		StringBuilder sb = new StringBuilder();
+
+		try {
+			// URL 객채 생성 (BASE_URL)
+			url = new URL(BASE_URL);
+			// URL을 참조하는 객체를 URLConnection 객체로 변환
+			con = (HttpURLConnection) url.openConnection();
+			// 커넥션 request 방식 "GET"으로 설정
+			con.setRequestMethod("GET");
+			// 커넥션 request 값 설정(key,value) 
+			con.setRequestProperty("Content-type", "application/json");
+			// void setRequestProperty (key,value) 다른 예시
+			// con.setRequestProperty("Authorization", AUTH_KEY);
+			// con.setRequestProperty("X-Auth-Token", AUTH_TOKEN);
+			// 받아온 JSON 데이터 출력 가능 상태로 변경 (default : false)
+			con.setDoOutput(true);
+
+			// 데이터 입력 스트림에 담기
+			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "UTF-8"));
+			while(br.ready()) {
+				sb.append(br.readLine());
+			}
+			con.disconnect();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		// JSON 데이터 파싱하기
+		// JSONParser에 입력 스트림에 담은 JSON데이터(sb.toString())를 넣어 파싱한 다음 JSONObject로 반환한다.
+		result = (JSONObject) new JSONParser().parse(sb.toString());
+
+		// REST API 호출 상태 출력하기
+		StringBuilder out = new StringBuilder();
+		out.append(result.get("status") +" : " + result.get("status_message") +"\n");
+
+		// JSON데이터에서 "data"라는 JSONObject를 가져온다.
+		JSONObject data = (JSONObject) result.get("data");
+
+		// JSONObject에서 Array데이터를 get하여 JSONArray에 저장한다.
+		JSONArray array = (JSONArray) data.get("movies");
+
+		// 데이터 출력하기 (뮤비 제목, 장르)
+		JSONObject tmp;
+		out.append("데이터 출력하기 \n");
+		for(int i=0; i<array.size(); i++) {
+			tmp = (JSONObject) array.get(i);
+			out.append("title("+i+") :"+ tmp.get("title") +"\n");
+			// movies[] 배열 안에 있는 genres[] 데이터 꺼내기
+			JSONArray array2 = (JSONArray) tmp.get("genres");
+			out.append("genres("+i+"): ");
+			for(int j=0; j<array2.size(); j++) {
+				out.append(array2.get(j));
+				if(j!=array2.size()-1) {
+					out.append(",");
+				}
+			}
+			out.append("\n");
+			out.append("\n");
+		}
+		System.out.println(out.toString());
+	}
+	*/
+	
+}
+
+
+

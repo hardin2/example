@@ -1,0 +1,320 @@
+import java.util.Scanner;
+import java.util.Date;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+import java.time.LocalTime;
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletHandler;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.*;
+
+public class MyHttp {
+	private Scanner sc;
+
+	public void runHttp() {
+		String ip = "127.0.0.1";
+		MyServer1 myServer1 = null, myServer2 = null;
+		MyClient1 cl1 = new MyClient1();
+		sc = new Scanner(System.in);
+		String line;
+		System.out.print("\n>>input : ");
+		while ((line = sc.nextLine()) != null) {
+			if (line.equals("q")) {
+				if (myServer1 != null) myServer1.quit();
+				if (myServer2 != null) myServer2.quit();
+				break; 
+			} else if (line.equals("s1")) {
+				myServer1 = new MyServer1(ip, 8080);
+				Thread thread1 = new Thread(myServer1);
+				thread1.start();
+				System.out.println("myServer1 start...");
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else if (line.equals("s2")) {
+				myServer2 = new MyServer1(ip, 8090);
+				Thread thread2 = new Thread(myServer2);
+				thread2.start();
+				System.out.println("myServer2 start...");
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			} else if (line.equals("c1")) {
+				try {
+					System.out.println("test requestDate...");
+					cl1.requestDate(ip, 8080);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (line.equals("c2")) {
+				try {
+					System.out.println("test requestFile2...");
+					cl1.requestFile2(ip, 8090);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (line.equals("c3")) {
+				try {
+					System.out.println("test sendToServer...");
+					cl1.sendToServer(ip, 8080);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			} else if (line.equals("c4")) {
+				try {
+					System.out.println("test requestRedirect...");
+					cl1.requestRedirect(ip, 8080, 8090);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			System.out.print("\n>>input : ");
+		}//end - while
+	}//end - runHttp()
+}//end - class MyHttp
+
+class MyClient1 {
+	public String url;
+	public void requestDate(String ip, int port) throws Exception {
+		String path = "/requestDate";
+		String query = "id=apple&key=DEFG";  
+		url = "http://" + ip + ":" + port + path + "?" + query;
+		HttpClient hClient = new HttpClient();
+		hClient.start();
+		Request req = hClient.newRequest(url).method(HttpMethod.GET);
+		ContentResponse res = req.send();
+		System.out.println("requestDate response : " + res.getContentAsString());
+		hClient.stop(); 
+	}//end - requestDate
+
+	public String requestFileName(String ip, int port) throws Exception {
+		String path = "/requestFileName";
+		url = "http://" + ip + ":" + port + path;
+		HttpClient hClient = new HttpClient();
+		hClient.start();
+		Request req = hClient.newRequest(url).method(HttpMethod.GET);
+		ContentResponse res = req.send();
+		String fname = res.getContentAsString();
+		System.out.println("requestFileName response: " + fname);
+		hClient.stop();
+		return fname;
+	}//end - requestFileName()
+
+	public void requestFile2(String ip, int port) throws Exception {
+		String path = "/requestFile2";
+		url = "http://" + ip + ":" + port + path;
+		HttpClient hClient = new HttpClient();
+		hClient.start();
+		Request req = hClient.newRequest(url).method(HttpMethod.GET);
+		ContentResponse res = req.send();
+		byte [] myByteArray = res.getContent();
+		try (FileOutputStream fos = new FileOutputStream("../CLIENT/xxx.txt")) {
+			fos.write(myByteArray);
+		}
+		hClient.stop(); 
+	}//end - requestFile2()
+
+	public void requestRedirect(String ip, int port, int redirectPort) throws Exception {
+		String path = "/requestRedirect";
+		url = "http://" + ip + ":" + port + path;
+		HttpClient hClient = new HttpClient();
+		hClient.start();
+		JsonObject jsObj = new JsonObject();
+		jsObj.addProperty("IP", ip);
+		jsObj.addProperty("PORT", redirectPort);
+		String hBody = jsObj.toString();
+		Request req = hClient.newRequest(url).method(HttpMethod.POST);
+		req.header(HttpHeader.CONTENT_TYPE, "application/json");
+		req.content(new StringContentProvider(hBody, "utf-8"));
+		ContentResponse res = req.send();
+		System.out.println("requestRedirect response : " + res.getContentAsString());
+		hClient.stop(); 
+	}//end - requestRedirect()
+
+	public void sendToServer(String ip, int port) throws Exception {
+		// 폴더에 있는 모든 file이 내용(content)을 JSON(filename, content)형태로 서버에 Http로 전송
+		String path = "/fileList";
+		String strFolder = "../CLIENT";
+		url = "http://" + ip + ":" + port + path;
+		HttpClient hClient = new HttpClient();
+		hClient.start();
+		File directory = new File(strFolder);
+		File[] fList = directory.listFiles();
+
+		for (File file : fList) {
+			JsonObject jsObj = new JsonObject();
+			String fName = file.getName();
+			String fContent = null;
+			fContent = new String(Files.readAllBytes(Paths.get(strFolder+"/"+fName)));
+			jsObj.addProperty("FileName", fName);
+			jsObj.addProperty("FileContent", fContent);
+			String hBody = jsObj.toString();
+			Request req = hClient.newRequest(url).method(HttpMethod.POST);
+			req.header(HttpHeader.CONTENT_TYPE, "application/json");
+			req.content(new StringContentProvider(hBody, "utf-8"));
+			ContentResponse res = req.send();
+			System.out.println("fileList response : " + res.getContentAsString());
+		}
+
+		hClient.stop(); 
+	}//end - sendToServer()
+}//end - class MyClient1
+​
+
+class MyServer1 extends Thread {
+	Server sv;
+	String ip;
+	int port;
+
+	public MyServer1(String ip, int port) {
+	this.ip = ip;
+	this.port = port;
+	}
+
+	public void run() {
+		sv = new Server();
+		ServerConnector http = new ServerConnector(sv);
+		http.setHost(ip);
+		http.setPort(port);
+		sv.addConnector(http);
+		ServletHandler svHandler = new ServletHandler();
+		svHandler.addServletWithMapping(MyServlet1.class, "/*");
+		//svHandler.addServletWithMapping(MyServlet1.class, "/mypath");
+		sv.setHandler(svHandler);
+		try {
+			sv.start();
+			sv.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}// end - run()
+
+	public void quit() {
+		try {
+			sv.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}//end - quit()
+
+}//end - class MyServer1
+
+​
+
+// java파일로 새로 만들어야 동작 함
+class MyServlet1 extends HttpServlet {
+
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		// "http://127.0.0.1:8080/fileList?id=test"
+		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/fileList"
+		String pathURI = req.getRequestURI(); // "/fileList"
+		String query = req.getQueryString(); // "id=test"
+		int port = req.getLocalPort();
+
+		if (pathURI.contains("/requestDate")) {
+			res.setStatus(200);
+			res.getWriter().write(new Date().toString()); // response date
+		} else if (pathURI.contains("/requestFileName")) {
+			res.setStatus(200);
+			res.getWriter().write("aaa.txt"); // response filename
+		} else if (pathURI.contains("/requestFile2")) { // 임의의 파일 전송
+			File file = new File("../CLIENT/aaa.txt");
+			byte[] fileContent = Files.readAllBytes(file.toPath());
+			res.setStatus(200);
+			ServletOutputStream stream = res.getOutputStream();
+			stream.flush();
+			stream.write(fileContent);
+			stream.flush();
+			stream.close();
+		} else {
+			res.setStatus(200);
+			res.getWriter().write("None!!"); // response data
+		}
+	}//end - doGet()
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+		// "http://127.0.0.1:8080/requestData?id=test"
+		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/requestData"
+		String pathURI = req.getRequestURI(); // "/requestData"
+		String query = req.getQueryString(); // "id=test"
+		int localPort = req.getLocalPort();
+		System.out.println("getContentLength : " + req.getContentLength());
+		System.out.println("getContentType : " + req.getContentType());
+		System.out.println("getContextPath : " + req.getContextPath());
+
+		// Request Parameter
+		List<String> parameterNameList = Collections.list(req.getParameterNames());
+		for (String name : parameterNameList) {
+			String value = req.getParameter(name);
+			System.out.println("Paramter : " + value);
+		}
+
+		// Request Header
+		Enumeration<String> headers = req.getHeaderNames();
+		while(headers.hasMoreElements()) {
+			String name = (String)headers.nextElement();
+			String value = req.getHeader(name);
+			System.out.println("Paramter : " + value);
+		} 
+
+​		// Request Body
+		BufferedReader input = new BufferedReader(new InputStreamReader(req.getInputStream()));
+		String buffer;
+		StringBuilder sb = new StringBuilder();
+		while ((buffer = input.readLine()) != null) {sb.append(buffer+"\n");}
+		String strBody = sb.toString();
+		input.close();
+		System.out.println("strBody : " + strBody);
+
+		if (pathURI.contains("/fileList")) { // client에서 받은 data를 모두 file에 write
+			File destFolder = new File("../SERVER");
+			if (!destFolder.exists()) {destFolder.mkdirs();}
+			Gson gson = new Gson();
+			JsonObject jObj = gson.fromJson(strBody, JsonObject.class);
+			String fileName = jObj.get("FileName").getAsString();
+			String fileContent = jObj.get("FileContent").getAsString();
+			PrintWriter prnWriter = new PrintWriter(new FileWriter(new File("../SERVER/"+fileName)));
+			prnWriter.print(fileContent);
+			prnWriter.close();
+			res.setStatus(200);
+			res.getWriter().write(fileName+" saved."); // response data
+		} else if (pathURI.contains("/requestRedirect")) {
+			Gson gson = new Gson();
+			JsonObject jObj = gson.fromJson(strBody, JsonObject.class);
+			String ip = jObj.get("IP").getAsString();
+			int port = jObj.get("PORT").getAsInt();
+			String fname = "";
+			MyClient1 cl = new MyClient1();
+			try {
+				fname = cl.requestFileName(ip, port);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			res.setStatus(200);
+			res.getWriter().write(fname); // response client-res
+		}
+	}//end - doPost()
+}//end - class MyServlet
+
+

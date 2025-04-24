@@ -1,0 +1,248 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+​import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.io.*;
+
+/* Donut JSon
+
+{
+
+"id":"0001",
+
+"type":"donut",
+
+"name":"Cake",
+
+"ppu":0.55,
+
+"batters":
+
+{
+
+"batter":
+
+[
+
+{"id":"1001", "type":"Regular"},
+
+{"id":"1002", "type":"Chocolate"}
+
+]
+
+},
+
+"topping":
+
+[
+
+{"id":"5001", "type":"None"},
+
+{"id":"5002", "type":"Glazed"},
+
+{"id":"5005", "type":"Sugar"} 
+
+] 
+
+}
+
+*/
+
+​
+public class MyJson {
+
+	public void printJSon(boolean update, Donut donut, String data) {
+		System.out.println("=== printJSon (" + data + ")");
+		if (update) {
+			donut.setId("donut id : " + data);
+			donut.setName("donut name : " + data);
+			donut.setPpu(1.55);
+			donut.setType("donut type : " + data);
+		}
+		System.out.println(donut.getId());
+		System.out.println(donut.getType());
+		System.out.println(donut.getName());
+		System.out.println(donut.getPpu());
+
+		for (Donut.Batters.Batter batter : donut.getBatters().getBatter()) {
+			if (update) {
+				batter.setId("batter id : " + data);
+				batter.setType("batter type : " + data);
+			}
+			System.out.println(batter.getId());
+			System.out.println(batter.getType());
+		}
+
+		for (Donut.Topping topping : donut.getTopping()) {
+			if (update) {
+				topping.setId("topping id : " + data);
+				topping.setType("topping type : " + data);
+			}
+			System.out.println(topping.getId());
+			System.out.println(topping.getType());
+		}
+	}
+
+	public void runJSonText() {
+		String textJson = "{\"id\":\"0001\",\"type\":\"donut\",\"name\":\"Cake\",\"ppu\":0.55,\"batters\":{\"batter\":[{\"id\":\"1001\",\"type\":\"Regular\"},{\"id\":\"1002\",\"type\":\"Chocolate\"}]},\"topping\":[{\"id\":\"5001\",\"type\":\"None\"},{\"id\":\"5002\",\"type\":\"Glazed\"},{\"id\":\"5005\",\"type\":\"Sugar\"}]}";
+		Gson gson = new Gson();
+		Donut donut = gson.fromJson(textJson, Donut.class);
+		printJSon(false, donut, "a"); 
+	}
+
+​	// Map을 json으로 변환한다.
+	public JsonObject getJsonStringFromMap( Map<String, Object> map )
+    {
+		JsonObject jb = new JsonObject();
+        for( Map.Entry<String, Object> entry : map.entrySet() ) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            jb.add(key, (JsonElement)value);
+        }
+        return jb;
+    }
+
+    // JsonArray jArray = new JsonArray(); jArray = [{ "k1" : "v1"}, { "k2" : 2}, {"k3" : object}]
+    public static JsonArray getJsonArrayFromList( List<Map<String, Object>> list )
+    {
+		JsonArray ja = new JsonArray();
+        for( Map<String, Object> map : list ) {
+			ja.add((JsonElement)map);
+        }
+        return ja;
+    }
+
+	//List<Map>을 jsonString으로 변환한다.
+    public static String getJsonStringFromList( List<Map<String, Object>> list )
+    {
+		JsonArray ja = getJsonArrayFromList( list );
+        return ja.toString();
+    }
+
+    //JsonObject를 Map<String, String>으로 변환한다.
+    public static Map<String, Object> getMapFromJsonObject( JsonObject jsonObj )
+    {
+		Map<String, Object> map = null;
+		//map = new ObjectMapper().readValue(jsonObj.toString(), Map.class) ;
+		return map;
+    }
+
+    public void runJSonFile2() {
+		String line = null;
+		String strJson = "";
+		// read json file
+		try {
+			FileReader fReader = new FileReader("./JSONFILE/test.json");
+			BufferedReader bReader = new BufferedReader(fReader);
+			while ((line = bReader.readLine()) != null) {
+			strJson += line;
+		}
+			bReader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//System.out.println(strJson);
+
+		// get key list
+		JsonElement je = JsonParser.parseString(strJson);
+		JsonObject jb = je.getAsJsonObject();
+		Set<String> ss = jb.keySet();
+		for (String key : ss) {
+			System.out.println("key : " + key);
+			System.out.println("value : " + jb.get(key));
+		}
+		
+		// System.out.println(jsonElement.toString());
+		// String name = jsonElement.getAsJsonObject().get("name").getAsString();
+		// System.out.println("name = "+name);
+		// int age = jsonElement.getAsJsonObject().get("age").getAsInt();
+		// System.out.println("age = "+age);
+		// String gender = jsonElement.getAsJsonObject().get("gender").getAsString();
+		// System.out.println("gender = "+gender);
+	}
+
+​
+
+	public void runJSonFile(){
+		Gson gson = new Gson();
+		Reader rd = null;
+		FileWriter fw;
+		Donut donut = null;
+		// read json file
+		try {
+		rd = new FileReader("./JSONFILE/test.json");
+		donut = gson.fromJson(rd, Donut.class);
+			printJSon(true, donut, "b");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		// write json file
+		try {
+			printJSon(true, donut, "c");
+			fw = new FileWriter("./JSONFILE/test_new.json");
+			gson.toJson(donut, fw);
+			fw.flush();
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}// end - class MyJson
+
+​
+
+class Donut {
+	private String id;
+	private String type;
+	private String name;
+	private double ppu;
+	private Batters batters;
+	private List<Topping> topping;
+
+	class Batters {
+		private List<Batter> batter;
+		public List<Batter> getBatter() {
+			return batter;
+		}
+
+		class Batter {
+			private String id;
+			private String type;
+			public String getId() {return this.id;}
+			public String getType() {return this.type;}
+			public void setId(String id) {this.id = id;}
+			public void setType(String type) {this.type = type;}
+		}// end - class Batter
+	}// end - class Batters
+
+	class Topping {
+		private String id;
+		private String type;
+		public String getId() {return this.id;}
+		public String getType() {return this.type;}
+		public void setId(String id) {this.id = id;}
+		public void setType(String type) {this.type = type;}
+	} // end - Topping
+
+	public String getId() {return this.id;}
+	public String getType() {return this.type;}
+	public String getName() {return this.name;}
+	public double getPpu() {return this.ppu;}
+	public Batters getBatters() {return this.batters;}
+	public List<Topping> getTopping() {return this.topping;}
+	public void setId(String id) {this.id = id;}
+	public void setType(String type) {this.type = type;}
+	public void setName(String name) {this.name = name;}
+	public void setPpu(double ppu) {this.ppu = ppu;}
+
+}// end - class Donut
+	
+	
