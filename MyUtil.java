@@ -75,22 +75,22 @@ class comparator implements Comparator<MyData> {
 		int ret = 0;
 		String s1 = box1.getStrVar(0);
 		String s2 = box2.getStrVar(0);
-		ret = s1.compareTo(s2); // ¿À¸§Â÷¼ø
-		//ret = s2.compareTo(s1); // ³»¸²Â÷¼ø
+		ret = s1.compareTo(s2); // ì˜¤ë¦„ì°¨ìˆœ
+		//ret = s2.compareTo(s1); // ë‚´ë¦¼ì°¨ìˆœ
 		if (ret == 0) {
 			 s1 = box1.getStrVar(1);
 			 s2 = box2.getStrVar(1);
-			 ret = s1.compareTo(s2); // ¿À¸§Â÷¼ø
-			//ret = s2.compareTo(s1); // ³»¸²Â÷¼ø
+			 ret = s1.compareTo(s2); // ì˜¤ë¦„ì°¨ìˆœ
+			//ret = s2.compareTo(s1); // ë‚´ë¦¼ì°¨ìˆœ
 			 if (ret == 0) {
 				 int i1 = box1.getIntVar(2);
 				 int i2 = box2.getIntVar(2);
 				 if (i1 < i2) {
-					 ret = -1; ; // ¿À¸§Â÷¼ø
-					 //ret = 1; // ³»¸²Â÷¼ø
+					 ret = -1; ; // ì˜¤ë¦„ì°¨ìˆœ
+					 //ret = 1; // ë‚´ë¦¼ì°¨ìˆœ
 				 } else if (i1 > i2) {
-					 ret = 1; // ¿À¸§Â÷¼ø
-					 //ret = -1; // ³»¸²Â÷¼ø
+					 ret = 1; // ì˜¤ë¦„ì°¨ìˆœ
+					 //ret = -1; // ë‚´ë¦¼ì°¨ìˆœ
 				 } else {
 					 ret = 0;
 				 }
@@ -123,13 +123,13 @@ public class MyUtil {
 		}
 	}
 	
-	// ¹®ÀÚ¿­ ±¸ºĞÀº StringTokenizer ÀÌ¿ë
-	// String¸Ş¼Òµå split() ÀÌ¿ë : ±¸ºĞÀÚ¿Ü °ø¹éÀÌ ÀÖ°Å³ª ¸Ç ¸¶Áö¸·À¸ ±¸ºĞÀÚ·Î ³¡³ª´Â °æ¿ì ÀÌ¿ë ºÒ°¡(º°µµ Ã³¸® ÇÊ¿ä)
+	// ë¬¸ìì—´ êµ¬ë¶„ì€ StringTokenizer ì´ìš©
+	// Stringë©”ì†Œë“œ split() ì´ìš© : êµ¬ë¶„ìì™¸ ê³µë°±ì´ ìˆê±°ë‚˜ ë§¨ ë§ˆì§€ë§‰ìœ¼ êµ¬ë¶„ìë¡œ ëë‚˜ëŠ” ê²½ìš° ì´ìš© ë¶ˆê°€(ë³„ë„ ì²˜ë¦¬ í•„ìš”)
 	public MyData strToken(String value) {
 		MyData mData = new MyData();
 		int i=0;
 		
-		// StringTokenizer ÀÌ¿ë
+		// StringTokenizer ì´ìš©
 		StringTokenizer s = new StringTokenizer(value);
 		while(s.hasMoreTokens()) {
 			String strTemp = s.nextToken("#");
@@ -140,7 +140,7 @@ public class MyUtil {
 			i++;
 		}
 		
-		// split() ÀÌ¿ë
+		// split() ì´ìš©
 //		String strTemp[] = value.split("#");
 //		for (i=0; i<strTemp.length; i++) {
 //			mData.setStrVar(i, strTemp[i]);
@@ -187,13 +187,13 @@ public class MyUtil {
 //			al.remove(0);
 //		}
 		
-		// print data - ¹æ½Ä1
+		// print data - ë°©ì‹1
 //		Iterator<MyData> itr = al.iterator();
 //		while(itr.hasNext()) {
 //			MyData mData = itr.next();
 //			mData.printData();
 //		}
-		// print data - ¹æ½Ä2
+		// print data - ë°©ì‹2
 		for (int i=0; i<al.size(); i++) {
 			MyData mData = al.get(i);
 			mData.printData();
@@ -201,12 +201,12 @@ public class MyUtil {
 		
 		// sort data
 		System.out.println("--> start sort");
-		Collections.sort(al, new comparator()); // Comparator¸¦ »ç¿ëÇÑ  Á¤·Ä(typeÀÌ class °°Àº °ÍÀ» °æ¿ì »ç¿ë)
-		//Collections.sort(alStr); // ¿À¸§Â÷¼ø Á¤·Ä(typeÀÌ StringÀÌ³ª Integer µîÀÏ °æ¿ì »ç¿ë°¡´É)
-		//Collections.sort(alStr, Collections.reverseOrder()); // ³»¸²Â÷¼ø Á¤·Ä(typeÀÌ StringÀÌ³ª Integer µîÀÏ °æ¿ì »ç¿ë°¡´É)
+		Collections.sort(al, new comparator()); // Comparatorë¥¼ ì‚¬ìš©í•œ  ì •ë ¬(typeì´ class ê°™ì€ ê²ƒì„ ê²½ìš° ì‚¬ìš©)
+		//Collections.sort(alStr); // ì˜¤ë¦„ì°¨ìˆœ ì •ë ¬(typeì´ Stringì´ë‚˜ Integer ë“±ì¼ ê²½ìš° ì‚¬ìš©ê°€ëŠ¥)
+		//Collections.sort(alStr, Collections.reverseOrder()); // ë‚´ë¦¼ì°¨ìˆœ ì •ë ¬(typeì´ Stringì´ë‚˜ Integer ë“±ì¼ ê²½ìš° ì‚¬ìš©ê°€ëŠ¥)
 		System.out.println("--> end sort");
 		
-		// print data - ¹æ½Ä2
+		// print data - ë°©ì‹2
 		for (int i=0; i<al.size(); i++) {
 			MyData mData = al.get(i);
 			mData.printData();
@@ -214,8 +214,8 @@ public class MyUtil {
 	}
 
 	public void myHashMap() {
-		HashMap<String, MyData> m = new HashMap<String, MyData> (); // ·£´ı Ãâ·Â
-		//LinkedHashMap<String, MyData> m = new LinkedHashMap<String, MyData>(); // ÀÔ·ÂÇÑ ¼ø¼­´ë·Î Ãâ·Â
+		HashMap<String, MyData> m = new HashMap<String, MyData> (); // ëœë¤ ì¶œë ¥
+		//LinkedHashMap<String, MyData> m = new LinkedHashMap<String, MyData>(); // ì…ë ¥í•œ ìˆœì„œëŒ€ë¡œ ì¶œë ¥
 		String key;
 		MyData mData;
 		
@@ -236,14 +236,14 @@ public class MyUtil {
 			m.put(key, mData);
 		}
 
-		// ·£´ı Ãâ·Â
+		// ëœë¤ ì¶œë ¥
 		System.out.println("== print random ==");
 		for (String keyTemp : m.keySet()) {
 			mData = m.get(keyTemp);
 			mData.printData();
 		}
 		
-//		// ÀÔ·ÂÇÑ ¼ø¼­´ë·Î Ãâ·Â
+//		// ì…ë ¥í•œ ìˆœì„œëŒ€ë¡œ ì¶œë ¥
 //		System.out.println("== print squence ==");
 //		for (java.util.Iterator<String> itr = m.keySet().iterator(); itr.hasNext(); ) {
 //			key = itr.next();
@@ -273,17 +273,32 @@ public class MyUtil {
 		}
 	}
 
-	public void printFile(String fileName) {
+	public void readTextFile(String fileName) {
 		String line = null;
 		try {
 			FileReader fReader = new FileReader(fileName);
 			BufferedReader bReader = new BufferedReader(fReader);
+			//BufferedReader reader = new BufferedReader(new FileReader("./file.txt", Charset.forName("UTF-8"))); // java11 ì´í›„ : ì¸ì½”ë”© ì§€ì •í•´ì„œ í…ìŠ¤íŠ¸ ì½ê¸° 
+			//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("./file.txt"), "UTF-8")); // java11 ì´ì „ : ì¸ì½”ë”© ì§€ì •í•´ì„œ í…ìŠ¤íŠ¸ ì½ê¸°
+
 			while ((line = bReader.readLine()) != null) {
 				System.out.println(line);
 			}
 			bReader.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void writeTextFile(String fileName, String data) {
+		String line = null;
+		try {
+			FileWriter fw = new FileWriter(fileName);
+			//FileWriter fw = new FileWriter(fileName, true); // ê¸°ì¡´ íŒŒì¼ì— ìƒˆë¡œìš´ ë‚´ìš© ì¶”ê°€í•˜ê¸° : íŒŒì¼ëª… ë’¤ì— ì¶”ê°€ëª¨ë“œ(append)ë¥¼ trueë¡œ í•œë‹¤.
+			fw.write(data)
+			fw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -296,12 +311,12 @@ public class MyUtil {
 			for (int i=0; i<fileList.length; i++) {
 				File file = fileList[i];
 				if (file.isFile()) {
-					// ÆÄÀÏÀÌ ÀÖ´Ù¸é ÆÄÀÏÀÌ¸§ Ãâ·Â
-					System.out.println("\t ÆÄÀÏÀÌ¸§ = " + file.getName() + ", size = " + file.length());
+					// íŒŒì¼ì´ ìˆë‹¤ë©´ íŒŒì¼ì´ë¦„ ì¶œë ¥
+					System.out.println("\t íŒŒì¼ì´ë¦„ = " + file.getName() + ", size = " + file.length());
 					printFile(file.getPath());
 				} else if (file.isDirectory()) {
-					System.out.println("µğ·ºÅä¸®ÀÌ¸§ = " + file.getName());
-					// ¼­ºêµğ·ºÅä¸®°¡ Á¸ÀçÇÏ¸é Àç±ÍÀû¹æ¹ıÀ¸·Î ´Ù½ÃÅ½»ö
+					System.out.println("ë””ë ‰í† ë¦¬ì´ë¦„ = " + file.getName());
+					// ì„œë¸Œë””ë ‰í† ë¦¬ê°€ ì¡´ì¬í•˜ë©´ ì¬ê·€ì ë°©ë²•ìœ¼ë¡œ ë‹¤ì‹œíƒìƒ‰
 					subDirList(file.getCanonicalPath().toString());
 				}
 			}
@@ -370,10 +385,10 @@ public class MyUtil {
 			BufferedReader stdErr = new BufferedReader(new InputStreamReader(proc.getErrorStream()));
 			
 			String line;
-			while ((line = stdOut.readLine()) != null) { System.out.println(line); } // Ç¥ÁØ Ãâ·Â
-			while ((line = stdErr.readLine()) != null) { System.out.println(line); } // Ç¥ÁØ¿¡·¯Ãâ·Â
+			while ((line = stdOut.readLine()) != null) { System.out.println(line); } // í‘œì¤€ ì¶œë ¥
+			while ((line = stdErr.readLine()) != null) { System.out.println(line); } // í‘œì¤€ì—ëŸ¬ì¶œë ¥
 			
-			// ¿ÜºÎÇÁ·Î±×·¥ ¹İÈ¯°ª Ãâ·Â
+			// ì™¸ë¶€í”„ë¡œê·¸ë¨ ë°˜í™˜ê°’ ì¶œë ¥
 			System.out.println("Exit Code : " + proc.exitValue());
 			
 			stdOut.close();
