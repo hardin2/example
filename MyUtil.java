@@ -109,6 +109,9 @@ public class MyUtil {
 			String line, id, pwd;
 			System.out.println("input : ");
 			line = sc.nextLine(); // input : id password
+			if (line.length() <= 0) {
+				continue;
+			}
 			if (line.equals("q")) {
 				break;
 			}
