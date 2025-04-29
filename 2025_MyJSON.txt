@@ -1,0 +1,191 @@
+import java.util.*;
+import java.io.*;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+public class MyJSON {
+
+	// {"result":"aaa"}
+	public String getResultJSON(String strJSON) {
+		JsonElement je = JsonParser.parseString(strJSON);
+		String strRes = JsonElement.getAsJsonObject().get("result").getAsString();
+		return strRes;
+	}
+
+	// com.google.gson.JsonArray  : [{String name1:String value1}, {String name2:String value2}, ... ]
+	// com.google.gson.JsonObject : {String name1:String value1, String name2:String value2}, ... }
+	public String makeJSON1(String name, String value) {
+		JsonObject jsObj = new JsonObject();
+		jsObj.addProperty(name, value);
+		return jsObj.toString();	
+	}
+
+	// {String name:[String data1, String data2, ..... ]}
+	public String makeJSON2(List<String> listData) {
+		CData1 cd1 = new CData1();
+		cd1.setListData1(listData);
+		String strJSON = new Gson().toJson(cd1);
+		return strJSON;
+	}
+	
+	public String getModelName(String strJSON) {
+		Gson gson = new Gson();
+		CData2 cd2 = gson.fromJson(strJSON, CData2.class);
+		return cd2.getModelName();
+	}
+	
+	public List<String> getQueries(String strJSON) {
+		Gson gson = new Gson();
+		CData2 cd2 = gson.fromJson(strJSON, CData2.class);
+		return cd2.getQueries();
+	}
+	
+	public CModel loadCModel(String fname) {
+		Gson gson = new Gson();
+		Reader rd = null;
+		CModel model = null;
+		// read json file
+		try {
+			rd = new FileReader(fname);
+			model = gson.fromJson(rd, CModel.class);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} 
+		return model;	
+	}
+	
+	public void printCModel(CModel cModel) {
+		List<Modles> lstModel = cModel.getModels();
+		for (int i=0l i<lstModel.size(); i++) {
+			Modles models = lstModel.get(i);
+			List<Classes> lstClasses = models.getClasses();
+			for (int j=0; j<lstClasses.size(); j++) {
+				Classes clas = lstClasses.get(j);
+				System.out.println("code : " + clas.getCode());
+				System.out.println("value : " + clas.getValue());
+			}
+			System.out.println("URL : " + models.getURL());	
+		}
+	}
+	
+	public String getValueCModel(CModel cModel, String strModelName, String strCode) {
+		List<Modles> lstModel = cModel.getModels();
+		for (int i=0l i<lstModel.size(); i++) {
+			Modles models = lstModel.get(i);
+			if (models.getModelName().equals(strModelName)) {
+				List<Classes> lstClasses = models.getClasses();
+				for (int j=0; j<lstClasses.size(); j++) {
+					Classes clas = lstClasses.get(j);
+					if (clas.getCode().equals(strCode)) {
+						return clas.getValue();
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public String getUrlCModel(CModel cModel, String strModelName) {
+		List<Modles> lstModel = cModel.getModels();
+		for (int i=0l i<lstModel.size(); i++) {
+			Modles models = lstModel.get(i);
+			if (models.getModelName().equals(strModelName)) {
+				return models.getURL();
+			}
+		}
+		return null;	
+	}
+}
+
+// {String name:[String data1, String data2, ....]}
+class CData1 {
+	private List<String> results; // String name : results, data : List Data
+	
+	public List<String> getListData1() {
+		return this.results;
+	}
+	public void setListData1(List<String> data) {
+		this.results = data;
+	}
+}
+
+// {"modelname":"aaa", "queries";["bbb", "ccc"]}
+class CData2 {
+	private String modelname;
+	private List<String> queries;
+	
+	public String getModelName() {
+		return this.modelname;
+	}
+	public List<String> getQueries() {
+		return this.queries;
+	}
+	public void setModelname(Strig strData) {
+		this.modelname = strData;
+	}
+	public void setQueries(List<Strig> lstData) {
+		this.queries = lstData;
+	}
+}
+
+/*
+	{
+		"models": [
+			{
+				"modelname": "cinema review",
+				"classes": [
+					{
+						"code": "fer34r3",
+						"value": "positive"
+					},
+					{
+						"code": "7jji95r",
+						"value": "positive"
+					}
+				],
+				"url": "http://127.0.0.1:9010"
+			},
+			{
+				"modelname": "cinema review",
+				"classes": [
+					{
+						"code": "fgr44323",
+						"value": "positive"
+					},
+					{
+						"code": "3kuygh9",
+						"value": "positive"
+					}
+				],
+				"url": "http://127.0.0.1:9010"			
+			}
+		]
+	}
+*/
+Class CModel {
+	private List<Models> modles;
+	
+	public List<Models> getModels() {return this.modles};
+}
+Class Models {
+	private String modelname;
+	private List<Classes> classes;
+	private String url;
+	
+	public Strig getModelName() {return this.modelname};
+	public List<Classes> getClasses() {return this.classes};
+	public Strig getURL() {return this.url};
+	
+}
+Class Classes {
+	private String code;
+	private String value;
+	
+	public Strig getCode() {return this.code};
+	public Strig getValue() {return this.value};
+}
+

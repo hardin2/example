@@ -1,0 +1,125 @@
+import java.util.*;
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletHandler;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.*;
+
+
+class MyServlet1 extends HttpServlet {
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+​		// Request Body
+		BufferedReader input = new BufferedReader(new InputStreamReader(req.getInputStream()));
+		String buffer;
+		StringBuilder sb = new StringBuilder();
+		while ((buffer = input.readLine()) != null) {sb.append(buffer+"\n");}
+		String strBody = sb.toString();
+		input.close();
+		//System.out.println("strBody : " + strBody);
+
+		// Loading DICTIONARY File
+		HashMap<String, String> hmapDIC = new HashMap<String, String> ();
+		try {
+			String strTemp[];
+			String line = null;
+			FileReader fReader = new FileReader("./aaa.txt");
+			BufferedReader bReader = new BufferedReader(fReader);
+			while ((line = bReader.readLine()) != null) {
+				String strTemp[] = str.split("#");
+				hmapDIC.put(strTemp[0], strTemp[1]);	
+			}
+			bReader.close();		
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		// Loading STOPWORD File
+		List<String> alStopWord = new ArrayList<String>();
+		try {
+			FileReader fReader = new FileReader("./bbb.txt");
+			BufferedReader bReader = new BufferedReader(fReader);
+			while ((line = bReader.readLine()) != null) {
+				alStopWord.add(line);			
+			}
+			bReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		// Loading MODELS.JSON File
+		MyJSON mjson = new MyJSON();
+		CModel model = mjson.loadCModel("./MODELS.JSON");
+		//mjson.printCModel(model);
+
+		// make query
+		List<String> lstValue = new ArrayList<String>();
+		String strModelname = mjson.getModelName(strBody);
+		List<String> queries = mjson.getQueries(strBody);
+		String strQueryData = null;
+		for (int i=0; i<queries.size(); i++) {
+			String strQuery = "";
+			String strData = queries.get(i);
+			String strTemp[] = strData.split(" ");
+			int cnt = 0;
+			for (int j=0; j<strTemp.length; j++) {
+				String strJ = hmapDIC.get(strTemp[j].toLowerCase());
+				if (strJ == null) continue;
+				int flag = 0;
+				for (int k=0; k<alStopWord.size(); k++) {
+					strK = alStopWord.get(k);
+					if (strK.equals(strJ)) {
+						flag = 1;
+						break;
+					}
+				}
+				if (flag == 1) continue;
+				if (cnt > 0) {
+					strQuery = strQuery + " " + strJ;
+				} else {
+					strQuery = strJ;
+				}
+				cnt++;			
+			}
+		
+			String hBody = mjson.makeJSON1("query", strQuery);
+			
+			String strRes = null;
+			MyClient1 cl1 = new MyClient1();
+			try {
+				String strValue = mjson.getUrlCModel(model, strModelname);
+				srtRes = cl1.sendDataURL(strValue, hBody);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			strRes = mjson.getResultJSON(strRes);
+			string strValue = mjson.getVauleCModel(model, strModelname, strRes);
+			lstValue.add(strValue);			
+		} 
+		
+		String strResJSON = mjson.makeJSON2(lstValue);
+
+		res.setStatus(HttpServletResponse.SC_OK); //res.setStatus(200);
+		res.getWriter().write(fname); // response client-res
+	}//end - doPost()
+	
+}//end - class MyServlet
+
+
+

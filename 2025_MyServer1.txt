@@ -1,0 +1,61 @@
+import java.util.*;
+import java.io.*;
+import java.net.Socket;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.text.ParseException;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpMethod;
+import org.eclipse.jetty.client.HttpClient;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.api.Request;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletHandler;
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.*;
+
+class MyServer1 extends Thread {
+	Server sv;
+	String ip;
+	int port;
+
+	public MyServer1(String ip, int port) {
+		this.ip = ip;
+		this.port = port;
+	}
+
+	public void run() {
+		sv = new Server();
+		ServerConnector http = new ServerConnector(sv);
+		http.setHost(ip);
+		http.setPort(port);
+		sv.addConnector(http);
+		ServletHandler svHandler = new ServletHandler();
+		svHandler.addServletWithMapping(MyServlet1.class, "/*");
+		//svHandler.addServletWithMapping(MyServlet1.class, "/mypath");
+		sv.setHandler(svHandler);
+		try {
+			sv.start();
+			sv.join();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}// end - run()
+
+	public void quit() {
+		try {
+			sv.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}//end - quit()
+
+}//end - class MyServer1
+
+
+

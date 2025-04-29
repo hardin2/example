@@ -1,0 +1,87 @@
+import java.util.*;
+import java.io.*;
+
+public class MyTest {
+	Scanner sc = new Scanner(System.in);
+	
+	void boolean isContainsKeyList(List<String> listData, String strKey) {
+		for (int i=0; i<listData.size(); i++) {
+			String strData = listData.get(i);
+			if (strData.equals(strKey) return true;
+		}
+		return false
+	}
+	
+	void doTestStdIn() {
+		HashMap<String, String> hMap = new HashMap<String, String> ();
+		List<String> listData = new ArrayList<String>();
+		String line;
+
+		try {
+			FileReader fReader = new FileReader("./aaa.txt");
+			BufferedReader bReader = new BufferedReader(fReader);
+			//BufferedReader reader = new BufferedReader(new FileReader("./file.txt", Charset.forName("UTF-8"))); // java11 이후 : 인코딩 지정해서 텍스트 읽기 
+			//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("./file.txt"), "UTF-8")); // java11 이전 : 인코딩 지정해서 텍스트 읽기
+
+			while ((line = bReader.readLine()) != null) {
+				//System.out.println(line);
+				String strTemp[] = str.split("#");
+				hMap.put(strTemp[0], strTemp[1]);				
+			}
+			bReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		try {
+			FileReader fReader = new FileReader("./bbb.txt");
+			BufferedReader bReader = new BufferedReader(fReader);
+			//BufferedReader reader = new BufferedReader(new FileReader("./file.txt", Charset.forName("UTF-8"))); // java11 이후 : 인코딩 지정해서 텍스트 읽기 
+			//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("./file.txt"), "UTF-8")); // java11 이전 : 인코딩 지정해서 텍스트 읽기
+
+			while ((line = bReader.readLine()) != null) {
+				//System.out.println(line);
+				listData.add(line);			
+			}
+			bReader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+
+		while(true) {
+			String strOut = "";
+			int cnt = 0;
+			line = sc.nextLine();
+			if (line.length() <= 0) continue;
+			
+			String strTemp[] = line.split(" ");
+			for (int i=0; i<strTemp.length; i++) {
+				String str1 = strTemp[i].toLowerCase();
+				String str2 = hMap.get(str1);
+				if (str2 == null) continue;
+				if (isContainsKeyList(listData, str2)) continue;
+				if (cnt !=0) { 
+					strOut = strOut + " " + str2;
+				} else {
+					strOut = str2;
+				}
+				cnt++;			
+			}
+		
+		}
+	}
+
+	void doTestHttp() {
+		MyServer1 myServer1 = new MyServer1("127.0.0.1", 8080);
+		Thread thread1 = new Thread(myServer1);
+		thread1.start();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+}
+
+
