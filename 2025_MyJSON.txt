@@ -9,6 +9,58 @@ import com.google.gson.JsonParser;
 
 public class MyJSON {
 
+	// File : test.json 
+	//{
+	//	"aaa.10": ["a11", "a12"],
+	//	"bbb.20": ["b21"],
+	//	"ccc.30": ["c31", "c32", "c33"]
+	//}
+	// key에 "." 문자가 들어 있는 경우 사용(Class 멤버변수(aaa.10)로 "." 사용 못하기 때문)
+    	public void makeHashMapFromJSonFile1(HashMap<String, List<String>> hMap) {
+		String line = null;
+		String strJson = "";
+		// read json file
+		try {
+			FileReader fReader = new FileReader("./test.json");
+			BufferedReader bReader = new BufferedReader(fReader);
+			while ((line = bReader.readLine()) != null) {
+			strJson += line;
+		}
+			bReader.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		//System.out.println(strJson);
+
+		// get key list
+		JsonElement je = JsonParser.parseString(strJson);
+		JsonObject jb = je.getAsJsonObject();
+		Set<String> ss = jb.keySet();
+		for (String key : ss) {
+			List<String> listTemp = new ArrayList<String>();
+			//System.out.println("key : " + key);
+			//System.out.println("value : " + jb.get(key));
+			JsonArray ja = (JsonArray) jb.get(key);
+			for (int i=0; i<ja.size(); i++) {
+				String strTemp = ja.get(i).getAsString();
+				listTemp.add(strTemp);
+			}
+			hMap.put(key, listTemp);			
+		}
+	}
+	public testMakeHashMapFromJSonFile1() {
+		HashMap<String, List<String>> hMap = new HashMap<String, List<String>> ();
+		makeHashMapFromJSonFile1(hMap);
+		for (String key : hMap.keySet()) {
+			List<String> listTemp = hMap.get(key);
+			for (int i=0; i<listTemp.size(); i++) {
+				System.out.println("Value : " + listTemp.get(i));	
+			}
+		}
+	}
+
 	// {"result":"aaa"}
 	public String getResultJSON(String strJSON) {
 		JsonElement je = JsonParser.parseString(strJSON);
