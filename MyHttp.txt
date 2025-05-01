@@ -224,6 +224,7 @@ class MyServer1 extends Thread {
 
 // java파일로 새로 만들어야 동작 함
 class MyServlet1 extends HttpServlet {
+	private HashMap<String, String> m_hMap = null;
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 		// "http://127.0.0.1:8080/fileList?id=test"
@@ -254,6 +255,11 @@ class MyServlet1 extends HttpServlet {
 	}//end - doGet()
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+
+		if (m_hMap == null {
+			m_hMap = new HashMap<String, String> ();
+		}
+
 		// "http://127.0.0.1:8080/requestData?id=test"
 		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/requestData"
 		String pathURI = req.getRequestURI(); // "/requestData"
