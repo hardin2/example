@@ -21,6 +21,8 @@ import javax.servlet.http.*;
 
 
 class MyServlet1 extends HttpServlet {
+	private HashMap<String, String> hmapDIC = null;
+	List<String> alStopWord = null;
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
@@ -34,34 +36,38 @@ class MyServlet1 extends HttpServlet {
 		//System.out.println("strBody : " + strBody);
 
 		// Loading DICTIONARY File
-		HashMap<String, String> hmapDIC = new HashMap<String, String> ();
-		try {
-			String strTemp[];
-			String line = null;
-			FileReader fReader = new FileReader("./aaa.txt");
-			BufferedReader bReader = new BufferedReader(fReader);
-			while ((line = bReader.readLine()) != null) {
-				String strTemp[] = str.split("#");
-				hmapDIC.put(strTemp[0], strTemp[1]);	
-			}
-			bReader.close();		
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		
+		if (hmapDIC = null) {
+			hmapDIC = new HashMap<String, String> ();
+			try {
+				String strTemp[];
+				String line = null;
+				FileReader fReader = new FileReader("./aaa.txt");
+				BufferedReader bReader = new BufferedReader(fReader);
+				while ((line = bReader.readLine()) != null) {
+					String strTemp[] = str.split("#");
+					hmapDIC.put(strTemp[0], strTemp[1]);	
+				}
+				bReader.close();		
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		}
+
 		// Loading STOPWORD File
-		List<String> alStopWord = new ArrayList<String>();
-		try {
-			FileReader fReader = new FileReader("./bbb.txt");
-			BufferedReader bReader = new BufferedReader(fReader);
-			while ((line = bReader.readLine()) != null) {
-				alStopWord.add(line);			
-			}
-			bReader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} 
-		
+		if (alStopWord == null) {
+			alStopWord = new ArrayList<String>();
+			try {
+				FileReader fReader = new FileReader("./bbb.txt");
+				BufferedReader bReader = new BufferedReader(fReader);
+				while ((line = bReader.readLine()) != null) {
+					alStopWord.add(line);			
+				}
+				bReader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		}
+
 		// Loading MODELS.JSON File
 		MyJSON mjson = new MyJSON();
 		CModel model = mjson.loadCModel("./MODELS.JSON");
