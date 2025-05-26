@@ -9,6 +9,130 @@ import com.google.gson.JsonParser;
 
 public class MyJSON {
 
+	// JsonObject : {  }
+	// JsonArray  : [  ]
+	
+	// {"aaa.10":"a11","bbb.20":"b21","ccc.30":"c31"}
+	public void doMakeJsonString()
+	{
+		// 입력한 순서를 보장하려면 LinkedHashMap을 사용해야 한다.
+		HashMap<String, String> m = new LinkedHashMap<String, String> ();
+		// {"aaa.10":"a11","bbb.20":"b21","ccc.30":"c31"}
+		m.put("aaa.10", "a11");
+		m.put("bbb.20", "b21");
+		m.put("ccc.30", "c31");
+		JsonObject jsObj = new JsonObject();
+		makeJsonString(jsObj, m);
+		System.out.println(jsObj.toString());
+	}
+	
+	// {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
+	public void doMakeJsonStringList()
+	{
+		// 입력한 순서를 보장하려면 LinkedHashMap을 사용해야 한다.
+		HashMap<String, List<String>> m = new LinkedHashMap<String, List<String>> ();
+		
+		// {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
+		List<String> listData1 = new ArrayList<String>();
+		listData1.add("a11");
+		listData1.add("a12");
+		m.put("aaa.10", listData1);
+
+		List<String> listData2 = new ArrayList<String>();
+		listData2.add("b21");
+		m.put("bbb.20", listData2);
+
+		List<String> listData3 = new ArrayList<String>();
+		listData3.add("c31");
+		listData3.add("c32");
+		listData3.add("c33");
+		m.put("ccc.30", listData3);
+		
+		System.out.println(m);
+		
+		JsonObject jsObj = new JsonObject();
+		makeJsonListString(jsObj, m);
+		System.out.println(jsObj.toString());
+	}
+	
+	//	{
+	//	"modelname": "cinema review",
+	//	"classes": [
+	//		{
+	//			"code": "fer34r3",
+	//			"value": "positive"
+	//		},
+	//		{
+	//			"code": "7jji95r",
+	//			"value": "positive"
+	//		}
+	//	],
+	//	"url": "http://127.0.0.1:9010"
+	//}
+	public void doMakeJsonObjectList()
+	{
+		JsonObject jobjModels = new JsonObject();
+		
+		// 1. "modelname": "cinema review",
+		jobjModels.addProperty("modelname", "cinema review");
+	
+		// [{"code": "fgr44323","value": "positive"}, {"code": "3kuygh9","value": "positive"}]
+		JsonArray ja1 = new JsonArray();
+		// {"code": "fgr44323","value": "positive"}
+		HashMap<String, String> m1 = new LinkedHashMap<String, String> ();
+		m1.put("code", "fgr44323");
+		m1.put("value", "positive");
+		JsonObject jsObj1 = new JsonObject();
+		makeJsonString(jsObj1, m1);
+		ja1.add(jsObj1);		
+		// {"code": "3kuygh9","value": "positive"}
+		m1.clear();
+		m1.put("code", "3kuygh9");
+		m1.put("value", "positive");
+		JsonObject jsObj2 = new JsonObject();
+		makeJsonString(jsObj2, m1);
+		ja1.add(jsObj2);
+		
+		// 2. "classes": [{"code": "fgr44323","value": "positive"}, {"code": "3kuygh9","value": "positive"}]
+		jobjModels.add("classes", ja1);
+	
+		// 3. "url": "http://127.0.0.1:9010"
+		jobjModels.addProperty("url", "http://127.0.0.1:9010");
+				
+		System.out.println(jobjModels.toString());
+		return;
+	}
+	
+	
+	public void makeJsonString(JsonObject jsObj, HashMap<String, String> hMap)
+	{
+		
+		// {"aaa.10":"a11","bbb.20":"b21","ccc.30":"c31"}
+		for (Entry<String, String> entry : hMap.entrySet()) { // LinkedHashMap
+			String strKey = entry.getKey();
+			String strValue = entry.getValue();
+			jsObj.addProperty(strKey, strValue);
+		}
+		return;
+	}
+	
+	public void makeJsonListString(JsonObject jsObj, HashMap<String, List<String>> hMap)
+	{
+		// {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
+		for (Entry<String, List<String>> entry : hMap.entrySet()) { // LinkedHashMap
+			String strKey = entry.getKey();
+			List<String> listValue = entry.getValue();
+			JsonArray ja = new JsonArray();
+			for (int i=0; i<listValue.size(); i++) {
+				ja.add(listValue.get(i));
+			}
+			jsObj.add(strKey, ja);
+		}
+		return;
+	}
+	
+
+
 	// File : test.json 
 	//{
 	//	"aaa.10": ["a11", "a12"],
