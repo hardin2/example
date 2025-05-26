@@ -11,7 +11,50 @@ public class MyJSON {
 
 	// JsonObject : {  }
 	// JsonArray  : [  ]
+
+	// {"aaa.10":"a11","bbb.20":"b21","ccc.30":"c31"}
+	public void doReadJsonString()
+	{
+		String strJson = "{\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}";
+		JsonElement je = JsonParser.parseString(strJson);
+		JsonObject jb = je.getAsJsonObject();
+		Set<String> ss = jb.keySet();
+		for (String key : ss) {
+			System.out.println("key : " + key);
+			System.out.println("value : " + jb.get(key));
+		}
+	}
 	
+	// {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
+	public void doReadJsonListString()
+	{
+		HashMap<String, List<String>> hMap = new LinkedHashMap<String, List<String>> ();
+		String strJson = "{\"aaa.10\": [\"a11\", \"a12\"], \"bbb.20\": [\"b21\"], \"ccc.30\": [\"c31\", \"c32\", \"c33\"]}";
+		JsonElement je = JsonParser.parseString(strJson);
+		JsonObject jb = je.getAsJsonObject();
+		Set<String> ss = jb.keySet();
+		for (String key : ss) {
+			List<String> listTemp = new ArrayList<String>();
+			//System.out.println("key : " + key);
+			//System.out.println("value : " + jb.get(key));
+			JsonArray ja = (JsonArray) jb.get(key);
+			for (int i=0; i<ja.size(); i++) {
+				String strTemp = ja.get(i).getAsString();
+				listTemp.add(strTemp);
+			}
+			hMap.put(key, listTemp);			
+		}		
+		
+		for (Entry<String, List<String>> entry : hMap.entrySet()) { // LinkedHashMap
+			String strKey = entry.getKey();
+			System.out.println("key : " + strKey);
+			List<String> listValue = entry.getValue();
+			for (int i=0; i<listValue.size(); i++) {
+				System.out.println("Value : " + listValue.get(i));
+			}
+		}
+	}
+
 	// {"aaa.10":"a11","bbb.20":"b21","ccc.30":"c31"}
 	public void doMakeJsonString()
 	{
