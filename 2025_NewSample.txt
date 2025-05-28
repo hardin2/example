@@ -96,7 +96,27 @@ import com.google.gson.JsonParser;
 	jobj.add("classes", ja); // add JsonElement(JsonObject or JsonArray)
 	jobj.addProperty("url", "http://127.0.0.1:9010"); // add String
 	String strJSON = jobj.toString(); // json to String
-	System.out.println(strJSON);	
+	System.out.println(strJSON);
+
+	// read/write json file
+	try {
+		// read json file
+		String strJson = "";
+		FileReader fReader = new FileReader("./test.json");
+		BufferedReader bReader = new BufferedReader(fReader);
+		while ((String line = bReader.readLine()) != null) { strJson += line; }
+		bReader.close();
+		JsonElement je = JsonParser.parseString(strJson);
+		JsonObject jo = je.getAsJsonObject();
+		// write json file
+		FileWriter fw = new FileWriter("./aa.json");
+		fw.write(jo.toString());
+		fw.close();
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
 }
 
 
