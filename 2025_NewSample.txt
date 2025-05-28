@@ -22,6 +22,84 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+{ //Scanner
+	Scanner sc = new Scanner(System.in);
+	while(true) {
+		String line = sc.nextLine();
+		line.substring(0, 8); // [0] ~ [7]
+		pwd = line.substring(8); // [8] ~ [end]
+		String arrTemp[] = line.split("#"); // arrTemp[0],arrTemp[1], ... 
+	}
+}
+
+{ // List
+	List<String> al = new ArrayList<String>();
+	for (int i=0; i<al.size(); i++) {String data = al.get(i);}
+	System.out.println(al.toString());
+}
+
+{ // MAP
+	HashMap<String, String> hMap = new LinkedHashMap<String, String> (); // LinkedHashMap : 입력한 순서 보장
+	hm.put(key, value);
+	for (Entry<String, String> entry : hMap.entrySet()) { // LinkedHashMap
+		String strKey = entry.getKey();
+		String strValue = entry.getValue();
+	}
+
+	HashMap<String, String> m = new HashMap<String, String> (); // 입력한 순서 미보장
+	for (String keyTemp : m.keySet()) { String strValue = m.get(keyTemp);  }
+}
+
+{ // File
+	try {   // read file
+		FileReader fReader = new FileReader(fileName);
+		BufferedReader bReader = new BufferedReader(fReader);
+		//BufferedReader reader = new BufferedReader(new FileReader("./file.txt", Charset.forName("UTF-8"))); // java11 이후 : 인코딩 지정해서 텍스트 읽기 
+		//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("./file.txt"), "UTF-8")); // java11 이전 : 인코딩 지정해서 텍스트 읽기
+		String strData = "";
+		while ((String line = bReader.readLine()) != null) { strData += line; }
+		bReader.close();
+	} catch (FileNotFoundException e) {
+		e.printStackTrace();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+
+	try {   // write file
+		FileWriter fw = new FileWriter(fileName);
+		//FileWriter fw = new FileWriter(fileName, true); // 기존 파일에 새로운 내용 추가하기 : 파일명 뒤에 추가모드(append)를 true로 한다.
+		fw.write(strData);
+		fw.close();
+	} catch (IOException e) {
+		e.printStackTrace();
+	}
+}
+
+{ // JSON      // JsonObject : {  }     // JsonArray  : [  ]
+	// read json
+	String strJson = "{\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}"; 
+	JsonElement je = JsonParser.parseString(strJson);
+	JsonObject jo = je.getAsJsonObject();
+	Set<String> ss = jo.keySet();
+	for (String key : ss) { String value = jo.get(key); } // {\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}
+	for (String key : ss) {  // {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
+		JsonArray ja = jo.get(key).getAsJsonArray; 
+		for (int i=0; i<ja.size(); i++) {  String strTemp = ja.get(i).getAsString(); }
+	}
+
+	// make json
+	JsonObject jobj = new JsonObject();
+	jobj.addProperty("modelname", "cinema review");
+	JsonArray ja = new JsonArray();
+	ja.add("ja111"); // add String
+	ja.add("ja222"); // add String
+	jobj.add("classes", ja); // add JsonElement(JsonObject or JsonArray)
+	jobj.addProperty("url", "http://127.0.0.1:9010"); // add String
+	String strJSON = jobj.toString(); // json to String
+	System.out.println(strJSON);	
+}
+
+
 class MyServer1 extends Thread {
 	public void run() {
 		Server sv = new Server();
