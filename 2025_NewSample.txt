@@ -180,7 +180,6 @@ class MyServlet1 extends HttpServlet {
 			stream.close();
 		} else {
 			res.setStatus(200);
-			res.getWriter().write("None!!"); // response data
 		}
 	}//end - doGet()
 
