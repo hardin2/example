@@ -159,7 +159,32 @@ class MyServlet1 extends HttpServlet {
 	private HashMap<String, String> hmFile1 = null;
 	private HashMap<String, DEVFILE> hmFile2 = null;
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
+	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException { // Body가 없고 qury에 있는 data만 사용
+		// "http://127.0.0.1:8080/fileList?id=test"
+		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/fileList"
+		String pathURI = req.getRequestURI(); // "/fileList"
+		String query = req.getQueryString(); // "id=test"
+		int port = req.getLocalPort();
+
+		if (pathURI.contains("/requestDate")) {
+			res.setStatus(200);
+			res.getWriter().write(new Date().toString()); // response date
+		} else if (pathURI.contains("/requestFile2")) { // 임의의 파일 전송
+			File file = new File("../CLIENT/aaa.txt");
+			byte[] fileContent = Files.readAllBytes(file.toPath());
+			res.setStatus(200);
+			ServletOutputStream stream = res.getOutputStream();
+			stream.flush();
+			stream.write(fileContent);
+			stream.flush();
+			stream.close();
+		} else {
+			res.setStatus(200);
+			res.getWriter().write("None!!"); // response data
+		}
+	}//end - doGet()
+
+	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException { // Body에 data가 들어 있음
 		// "http://127.0.0.1:8080/requestData?id=test"
 		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/requestData"
 		String pathURI = req.getRequestURI(); // "/requestData"
@@ -207,7 +232,7 @@ class MyServlet1 extends HttpServlet {
 
 			for (String strKey : hmFile2.keySet()) {  // send to target
 				DEVFILE devf = hmFile2.get(strKey);
-				String strRes = sendToTarget(devf.hostname, def.port, strJSon);
+				String strRes = sendToTargetPOST(devf.hostname, def.port, strJSon);
 
 				JsonObject jo1 = JsonParser.parseString(strRes).getAsJsonObject();
 				Set<String> ss = jo1.keySet();
@@ -226,16 +251,16 @@ class MyServlet1 extends HttpServlet {
 		}
 	}//end - doPost()
 
-	public String sendToTarget(String ip, String port, String strJSon) {
+	public String sendToTargetPOST(String ip, String port, String strJSon) {
 		String strRes = "";
 		String path = "/fromEdge";
 		String url = "http://" + ip + ":" + Integer.parseInt(port) + path;
 		HttpClient hClient = new HttpClient();
-		tyr {
+		ty {
 			hClient.start();
 			Request req = hClient.newRequest(url).method(HttpMethod.POST);
 			req.header(HttpHeader.CONTENT_TYPE, "application/json");
-			req.content(new StringContentProvider(strJSon, "utf-8");
+			req.content(new StringContentProvider(strJSon, "utf-8"));
 			ContentResponse res = req.send();
 			strRes = res.getContentAsString();
 			hClient.stop();
