@@ -270,6 +270,26 @@ class MyServlet1 extends HttpServlet {
 		}
 		return strRes;
 	}
+
+	public String sendToTargetGET(String strURL) { // strURL -> htttp://127.0.0.1:8012/add?id=100&key=none&data=0001
+		String strRes = "";
+		//String path = "/fromEdge";
+		//String url = "http://" + ip + ":" + Integer.parseInt(port) + path;
+		HttpClient hClient = new HttpClient();
+		ty {
+			hClient.start();
+			Request req = hClient.newRequest(url).method(HttpMethod.GET);
+			req.header(HttpHeader.CONTENT_TYPE, "application/json"); // reapons를 json string으로 받기 위해 설정
+			ContentResponse res = req.send();
+			strRes = res.getContentAsString(); // response data 가져옴
+			hClient.stop();
+			//System.out.println("sendToTarget response : " + strRes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return strRes;
+	}
+
 }
 
 
