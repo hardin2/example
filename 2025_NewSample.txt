@@ -46,8 +46,8 @@ import com.google.gson.JsonParser;
 		String strValue = entry.getValue();
 	}
 
-	HashMap<String, String> m = new HashMap<String, String> (); // 입력한 순서 미보장
-	for (String keyTemp : m.keySet()) { String strValue = m.get(keyTemp);  }
+	HashMap<String, String> hMap = new HashMap<String, String> (); // 입력한 순서 미보장
+	for (String strKey : hMap.keySet()) { String strValue = hMap.get(strKey);  }
 }
 
 { // File
@@ -56,8 +56,8 @@ import com.google.gson.JsonParser;
 		BufferedReader bReader = new BufferedReader(fReader);
 		//BufferedReader reader = new BufferedReader(new FileReader("./file.txt", Charset.forName("UTF-8"))); // java11 이후 : 인코딩 지정해서 텍스트 읽기 
 		//BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream("./file.txt"), "UTF-8")); // java11 이전 : 인코딩 지정해서 텍스트 읽기
-		String strData = "";
-		while ((String line = bReader.readLine()) != null) { strData += line; }
+		String strData = ""; String line;
+		while ((line = bReader.readLine()) != null) { strData += line; }
 		bReader.close();
 	} catch (FileNotFoundException e) {
 		e.printStackTrace();
@@ -79,9 +79,9 @@ import com.google.gson.JsonParser;
 	// read json
 	String strJson = "{\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}"; 
 	JsonElement je = JsonParser.parseString(strJson);
-	JsonObject jo = je.getAsJsonObject();
+	JsonObject jo = je.getAsJsonObject(); // JsonParser.parseString(strJson).getAsJsonObject();
 	Set<String> ss = jo.keySet();
-	for (String key : ss) { String value = jo.get(key); } // {\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}
+	for (String key : ss) { String value = jo.get(key).getAsString(); } // {\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}
 	for (String key : ss) {  // {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
 		JsonArray ja = jo.get(key).getAsJsonArray; 
 		for (int i=0; i<ja.size(); i++) {  String strTemp = ja.get(i).getAsString(); }
@@ -98,7 +98,7 @@ import com.google.gson.JsonParser;
 	String strJSON = jobj.toString(); // json to String
 	System.out.println(strJSON);
 
-	// read/write json file
+	// read-write json file
 	try {
 		// read json file
 		String strJson = "";
@@ -107,7 +107,7 @@ import com.google.gson.JsonParser;
 		while ((String line = bReader.readLine()) != null) { strJson += line; }
 		bReader.close();
 		JsonElement je = JsonParser.parseString(strJson);
-		JsonObject jo = je.getAsJsonObject();
+		JsonObject jo = je.getAsJsonObject(); // JsonParser.parseString(strJson).getAsJsonObject();
 		// write json file
 		FileWriter fw = new FileWriter("./aa.json");
 		fw.write(jo.toString());
@@ -151,7 +151,7 @@ class MyServer1 extends Thread {
 class DEVFILE {
   public String device;
   public String hostname;
-  public String prot;
+  public String port;
 }
 
 // java파일로 새로 만들어야 동작 함
@@ -159,40 +159,7 @@ class MyServlet1 extends HttpServlet {
 	private HashMap<String, String> hmFile1 = null;
 	private HashMap<String, DEVFILE> hmFile2 = null;
 
-	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-		// "http://127.0.0.1:8080/fileList?id=test"
-		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/fileList"
-		String pathURI = req.getRequestURI(); // "/fileList"
-		String query = req.getQueryString(); // "id=test"
-		int port = req.getLocalPort();
-
-		if (pathURI.contains("/requestDate")) {
-			res.setStatus(200);
-			res.getWriter().write(new Date().toString()); // response date
-		} else if (pathURI.contains("/requestFileName")) {
-			res.setStatus(200);
-			res.getWriter().write("aaa.txt"); // response filename
-		} else if (pathURI.contains("/requestFile2")) { // 임의의 파일 전송
-			File file = new File("../CLIENT/aaa.txt");
-			byte[] fileContent = Files.readAllBytes(file.toPath());
-			res.setStatus(200);
-			ServletOutputStream stream = res.getOutputStream();
-			stream.flush();
-			stream.write(fileContent);
-			stream.flush();
-			stream.close();
-		} else {
-			res.setStatus(200);
-			res.getWriter().write("None!!"); // response data
-		}
-	}//end - doGet()
-
 	protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-
-		if (hmFile1 == null) {
-			m_hMap = new HashMap<String, String> ();
-		}
-
 		// "http://127.0.0.1:8080/requestData?id=test"
 		String url = req.getRequestURL().toString(); // "http://127.0.0.1:8080/requestData"
 		String pathURI = req.getRequestURI(); // "/requestData"
@@ -217,7 +184,7 @@ class MyServlet1 extends HttpServlet {
 			System.out.println("Paramter : " + value);
 		} 
 
-​		// Request Body
+		// Request Body
 		BufferedReader input = new BufferedReader(new InputStreamReader(req.getInputStream()));
 		String buffer;
 		StringBuilder sb = new StringBuilder();
@@ -226,35 +193,58 @@ class MyServlet1 extends HttpServlet {
 		input.close();
 		System.out.println("strBody : " + strBody);
 
+		if (hmFile1 == null) { hmFile1 = new HashMap<String, String> (); hmFile1.put(strKey, StrValue); }
+		if (hmFile2 == null) { hmFile2 = new HashMap<String, DEVFILE> (); DEVFILE devf = new DEVFILE(); hmFile1.put(strKey, devf); }
+​
 		if (pathURI.contains("/requestData")) { 
-			File destFolder = new File("../SERVER");
-			if (!destFolder.exists()) {destFolder.mkdirs();}
-			Gson gson = new Gson();
-			JsonObject jObj = gson.fromJson(strBody, JsonObject.class);
-			String fileName = jObj.get("FileName").getAsString();
-			String fileContent = jObj.get("FileContent").getAsString();
-			PrintWriter prnWriter = new PrintWriter(new FileWriter(new File("../SERVER/"+fileName)));
-			prnWriter.print(fileContent);
-			prnWriter.close();
-			res.setStatus(200);
-			res.getWriter().write(fileName+" saved."); // response data
-		} else if (pathURI.contains("/requestRedirect")) {
-			Gson gson = new Gson();
-			JsonObject jObj = gson.fromJson(strBody, JsonObject.class);
-			String ip = jObj.get("IP").getAsString();
-			int port = jObj.get("PORT").getAsInt();
-			String fname = "";
-			MyClient1 cl = new MyClient1();
-			try {
-				fname = cl.requestFileName(ip, port);
-			} catch (Exception e) {
-				e.printStackTrace();
+			JsonObject jobj = new JsonObject();
+			jobj.addProperty("modelname", "cinema review");
+			JsonArray ja = new JsonArray();
+			ja.add("ja111"); ja.add("ja222");
+			jobj.add("classes", ja); // add JsonElement(JsonObject or JsonArray)
+			jobj.addProperty("url", "http://127.0.0.1:9010"); // add String
+			String strJSON = jobj.toString(); // json to String
+
+			for (String strKey : hmFile2.keySet()) {  // send to target
+				DEVFILE devf = hmFile2.get(strKey);
+				String strRes = sendToTarget(devf.hostname, def.port, strJSon);
+
+				JsonObject jo1 = JsonParser.parseString(strRes).getAsJsonObject();
+				Set<String> ss = jo1.keySet();
+				for (String key : ss) { String value = jo1.get(key).getAsString(); } // {\"aaa.10\":\"a11\",\"bbb.20\":\"b21\",\"ccc.30\":\"c31\"}
+				for (String key : ss) {  // {"aaa.10": ["a11", "a12"], "bbb.20": ["b21"], "ccc.30": ["c31", "c32", "c33"]}
+					JsonArray ja = jo1.get(key).getAsJsonArray; 
+					for (int i=0; i<ja.size(); i++) {  String strTemp = ja.get(i).getAsString(); }
+				}
 			}
-			res.setStatus(HttpServletResponse.SC_OK); //res.setStatus(200);
-			res.getWriter().write(fname); // response client-res
+
+			// response : json
+			JsonObject joRes = new JsonObject();
+			joRes.add("result", "test value");
+			res.setStatus(200);
+			res.getWriter().write(joRes.toString());
 		}
 	}//end - doPost()
 
+	public String sendToTarget(String ip, String port, String strJSon) {
+		String strRes = "";
+		String path = "/fromEdge";
+		String url = "http://" + ip + ":" + Integer.parseInt(port) + path;
+		HttpClient hClient = new HttpClient();
+		tyr {
+			hClient.start();
+			Request req = hClient.newRequest(url).method(HttpMethod.POST);
+			req.header(HttpHeader.CONTENT_TYPE, "application/json");
+			req.content(new StringContentProvider(strJSon, "utf-8");
+			ContentResponse res = req.send();
+			strRes = res.getContentAsString();
+			hClient.stop();
+			//System.out.println("sendToTarget response : " + strRes);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return strRes;
+	}
 }
 
 
