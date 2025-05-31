@@ -14,7 +14,18 @@ cmd창 : java -cp bin 패키지.메인클래스명 < 입력파일명
 
        java -cp bin card.client.launcher < ..\TestData\Question1\TEST1.TXT
 
-​
+​// JAVA 문자 체크 및 형변환
+a = "aBcDeFg"; b = a.charAt(i); // 문자열에서 문자하나만 가져오기
+for (char x : strData.toCharArray()) { if(Character.isUpperCase(x)){}; } // 문자(char) 값이 대문자 인지 확인
+if(Character.isUpperCase(strData.charAt(0)){}; // 문자(char) 값이 대문자 인지 확인. isLowerCase()도 있음
+strData.toUpperCase(); strData.toLowerCase(); // 문자열 대소문자 변환
+String s = "12"; int i = Integer.parseInt(s); // String To Int
+int i = Integer.valueOf(s); // String To Int : (Casting 하려는 자료형).valueOf(Casting 할 Value)
+int i = 12; String s = Integer.toString(i);   // Int To String
+char ch1 = '5'; char[] ch2 = {'a','b', 'c'}; String s1 = String.valueOf(ch1); String s2 = String.valueOf(ch2); // Char To String
+String s1 = "1"; String s2 = "1234"; char ch1 = s1.charAt(0); char[] ch2 = s2.toCharArray(); // String To Char
+char ch = '5'; int i = (int)(ch - '0'); // Char To Int
+int i = 5; char ch = (char)(i + '0'); // Int To Char
 
 // JAVA API 모음
 
