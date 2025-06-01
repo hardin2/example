@@ -50,6 +50,7 @@ import com.google.gson.JsonParser;
 
 	HashMap<String, String> hMap = new HashMap<String, String> (); // 입력한 순서 미보장
 	for (String strKey : hMap.keySet()) { String strValue = hMap.get(strKey);  }
+	hMap.replace(strKey, strValue); // 해당 key에 해당하는 data를 업데이트
 }
 
 { // File
