@@ -257,7 +257,7 @@ class MyServlet1 extends HttpServlet {
 		String path = "/fromEdge";
 		String url = "http://" + ip + ":" + Integer.parseInt(port) + path;
 		HttpClient hClient = new HttpClient();
-		ty {
+		try {
 			hClient.start();
 			Request req = hClient.newRequest(url).method(HttpMethod.POST);
 			req.header(HttpHeader.CONTENT_TYPE, "application/json");
