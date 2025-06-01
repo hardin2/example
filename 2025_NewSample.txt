@@ -277,9 +277,9 @@ class MyServlet1 extends HttpServlet {
 		//String path = "/fromEdge";
 		//String url = "http://" + ip + ":" + Integer.parseInt(port) + path;
 		HttpClient hClient = new HttpClient();
-		ty {
+		try {
 			hClient.start();
-			Request req = hClient.newRequest(url).method(HttpMethod.GET);
+			Request req = hClient.newRequest(strURL).method(HttpMethod.GET);
 			req.header(HttpHeader.CONTENT_TYPE, "application/json"); // reapons를 json string으로 받기 위해 설정
 			ContentResponse res = req.send();
 			strRes = res.getContentAsString(); // response data 가져옴
