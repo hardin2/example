@@ -28,7 +28,8 @@ import com.google.gson.JsonParser;
 		String line = sc.nextLine();
 		line.substring(0, 8); // [0] ~ [7]
 		pwd = line.substring(8); // [8] ~ [end]
-		String arrTemp[] = line.split("#"); // arrTemp[0],arrTemp[1], ... 
+		String arrTemp[] = line.split("#"); // arrTemp[0],arrTemp[1], ...
+		for (String strData : arrTemp) { System.out.println(strData); }
 	}
 }
 
